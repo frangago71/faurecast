@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Data & Models
+data/*.db
+data/raw/*
+!data/raw/.gitkeep
+models/*.pt
+models/*.joblib
+!models/.gitkeep
+
+# IDEs
+.vscode/
+.idea/

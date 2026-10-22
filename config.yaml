@@ -1,0 +1,25 @@
+project:
+  name: "Faurecast"
+  version: "0.1.0"
+  description: "Plataforma modulada de pronóstico de fútbol y aprendizaje continuo"
+
+database:
+  path: "data/faurecast.db"
+
+competition:
+  league_name: "LaLiga"
+  league_code: "ESP-LaLiga"
+  country: "Spain"
+  seasons:
+    historical: "2025-2026"
+    active: "2026-2027"
+
+features:
+  initial_elo: 1500.0
+  initial_sigma: 200.0
+  k_factor: 32.0
+
+model:
+  weights_path: "models/faurecast_nn.pt"
+  learning_rate: 0.001
+  epochs: 100
