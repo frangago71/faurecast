@@ -79,6 +79,7 @@ class NeuralNetworkModel:
         for idx in range(len(lambdas)):
             l_h, l_a = float(lambdas[idx][0]), float(lambdas[idx][1])
 
+            # Matriz de probabilidad Poisson
             p_matrix = np.zeros((max_goals + 1, max_goals + 1))
             for i in range(max_goals + 1):
                 p_i = (l_h ** i) * math.exp(-l_h) / math.factorial(i)
@@ -88,14 +89,25 @@ class NeuralNetworkModel:
 
             p_matrix /= p_matrix.sum()
 
-            best_i, best_j = np.unravel_index(np.argmax(p_matrix), p_matrix.shape)
-
+            # Probabilidades acumuladas por signo 1X2
             p_1 = float(np.sum(np.tril(p_matrix, -1)))
             p_x = float(np.sum(np.diag(p_matrix)))
             p_2 = float(np.sum(np.triu(p_matrix, 1)))
 
             probs = {"1": p_1, "X": p_x, "2": p_2}
             predicted_1x2 = max(probs, key=probs.get)
+
+            # --- CORRECCIÓN: Filtrar la matriz según el signo 1X2 ganador ---
+            mask = np.zeros_like(p_matrix, dtype=bool)
+            if predicted_1x2 == "1":
+                mask[np.tril_indices(max_goals + 1, -1)] = True  # Solo i > j
+            elif predicted_1x2 == "2":
+                mask[np.triu_indices(max_goals + 1, 1)] = True   # Solo i < j
+            else:
+                np.fill_diagonal(mask, True)                      # Solo i == j
+
+            masked_p_matrix = np.where(mask, p_matrix, -1.0)
+            best_i, best_j = np.unravel_index(np.argmax(masked_p_matrix), p_matrix.shape)
 
             results.append({
                 "xg_home": l_h,
